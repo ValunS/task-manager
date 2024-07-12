@@ -16,7 +16,7 @@ class TaskController extends Controller
             'status' => 'in:pending,in_progress,completed',
         ]);
 
-        $tasks = Task::query();
+        $tasks = auth()->user()->tasks();
 
         if ($request->has('due_date') && !empty($request->input('due_date'))) { 
             $tasks->whereDate('due_date', $request->input('due_date'));
