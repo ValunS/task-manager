@@ -18,7 +18,7 @@ class Task extends Model
     }
 
     // Области видимости (scopes) для поиска
-    public function scopeByStatus($query, $status)
+    public function scopeByStatus($query, $status = null)
     {
         if ($status) {
             return $query->where('status', $status);
@@ -26,11 +26,28 @@ class Task extends Model
         return $query;
     }
 
-    public function scopeByDueDate($query, $dueDate)
+    public function scopeByDueDate($query, $dueDate = null)
     {
         if ($dueDate) {
             return $query->whereDate('due_date', $dueDate);
         }
+        return $query;
+    }
+
+    public function scopeApplyFilters($query, array $filters)
+    {
+        //  Фильтрация по дате выполнения
+        if (isset($filters['due_date']) && !empty($filters['due_date'])) {
+            $query->byDueDate($filters['due_date']);
+        }
+
+        // Фильтрация по статусу
+        if (isset($filters['status']) && !empty($filters['status'])) {
+            $query->byStatus($filters['status']);
+        }
+
+        //  Здесь можно легко добавить другие фильтры в будущем
+
         return $query;
     }
 }
