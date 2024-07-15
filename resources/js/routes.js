@@ -91,7 +91,6 @@ router.beforeEach(async (to, from, next) => {
             await store.dispatch("auth/checkToken");
 
             if (store.getters["auth/isTokenValid"]) {
-                initApp(); //  Инициализируем приложение
                 return next(); //  Доступ разрешен
             }
         } catch (error) {
