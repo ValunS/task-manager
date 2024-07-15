@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class TaskController extends Controller
 {
@@ -29,7 +30,7 @@ class TaskController extends Controller
         return response()->json($tasks->get());
     }
 
-    public function store(Request $request)
+    public function store(Request $request) :JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -48,13 +49,24 @@ class TaskController extends Controller
         return response()->json($task, 201);
     }
 
-    public function show(Task $task)
+    public function show(Task $task) :JsonResponse
     {
+
+        if ($task->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         return response()->json($task);
     }
 
-    public function update(Request $request, Task $task)
+    public function update(Request $request, Task $task) :JsonResponse
     {
+
+        //Проверка
+        if ($task->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'title' => 'string|max:255',
             'description' => 'nullable|string',
@@ -71,7 +83,7 @@ class TaskController extends Controller
         return response()->json($task);
     }
 
-    public function destroy(Task $task)
+    public function destroy(Task $task) :JsonResponse
     {
         $task->delete();
 

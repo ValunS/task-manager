@@ -1,15 +1,22 @@
-import './bootstrap';
+import "./bootstrap";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
-import { createApp } from 'vue';
-import App from './App.vue';
-import axios from '@/axios';
+import { createApp } from "vue";
+import App from "./App.vue";
+import axios from "@/axios";
 
-import VueAxios from 'vue-axios'
-import router from './routes'
+import VueAxios from "vue-axios";
 
-// import ExampleComponent from './components/ExampleComponent.vue';
-// app.component('example-component', ExampleComponent);
+import { router, store } from "./routes";
 
-createApp(App).use(router).use(VueAxios, axios).mount('#app');
+// Имортируем Vuex и наше хранилище
+
+const app = createApp(App);
+
+app.use(store);
+store.dispatch("auth/checkToken").then(() => {
+    app.use(router);
+    app.use(VueAxios, axios);
+    app.mount("#app");
+});
