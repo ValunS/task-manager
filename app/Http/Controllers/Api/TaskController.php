@@ -12,16 +12,22 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
-        // $request->validate([
-        //     'due_date' => 'date',
-        //     'status' => 'in:pending,in_progress,completed',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'due_date' => 'date',
+            'status' => 'in:pending,in_progress,completed',
+        ]);
 
-        $tasks = auth()->user()->tasks()
-                    ->applyFilters($request->all()) // Применяем все фильтры
-                    ->get();
+        $tasks = auth()->user()->tasks();
 
-        return response()->json($tasks);
+        if ($request->has('due_date') && !empty($request->input('due_date'))) { 
+            $tasks->whereDate('due_date', $request->input('due_date'));
+        }
+    
+        if ($request->has('status') && !empty($request->input('status'))) { 
+            $tasks->where('status', $request->input('status'));
+        }
+
+        return response()->json($tasks->get());
     }
 
     public function store(Request $request) :JsonResponse
